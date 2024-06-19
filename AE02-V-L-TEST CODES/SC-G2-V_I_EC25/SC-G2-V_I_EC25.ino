@@ -1,6 +1,6 @@
 /*
  * RTC Check
- * micro SD Card Check CS : 15
+ * micro SD Card Check 
  * RS485
  * SIM800C
  * All Output Turn ON Series
@@ -60,7 +60,7 @@ void setup() {
   Serial2.begin(115200, SERIAL_8N1, GSM_RX, GSM_TX); 
 
   pinMode(GSM_RESET, OUTPUT);
-  digitalWrite(GSM_RESET, HIGH);   // RS-485 
+  digitalWrite(GSM_RESET, HIGH);    
 
   pinMode(RS485_FC, OUTPUT);
   digitalWrite(RS485_FC, HIGH);   // RS-485 
@@ -165,7 +165,5 @@ void loop() {
   digitalWrite(OUTPUT1, LOW);
   digitalWrite(OUTPUT2, LOW);
   Serial1.println("Hello RS-485");
-   
- //Serial2.println("AT");
- delay(1000);
+  delay(1000);
 }
