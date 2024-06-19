@@ -2,12 +2,12 @@
  * RTC Check
  * micro SD Card Check 
  * RS485
- * SIM800C
+ * SIM7500/EC25
  * All Output Turn ON Series
  * All input status serial print
  * Turns ON All Outputs in series
  * Serial prints all the input status
- * SIM800C External Antenna Test
+ * External Antenna Test
  */
 
 #include <SPI.h>
