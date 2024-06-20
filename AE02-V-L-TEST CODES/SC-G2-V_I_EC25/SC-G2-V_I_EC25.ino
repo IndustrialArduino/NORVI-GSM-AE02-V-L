@@ -18,14 +18,13 @@
 
 #define ANALOG_PIN_0 36
 
-#define INPUT1 39
+#define INPUT1 35
 #define INPUT2 34
-#define INPUT3 35
-#define INPUT4 14
-#define INPUT5 13
+#define INPUT3 14
+#define INPUT4 13
+#define INPUT5 4
 #define INPUT6 5
 #define INPUT7 15
-#define INPUT8 19
 
 #define OUTPUT1 12
 #define OUTPUT2 2
@@ -75,8 +74,7 @@ void setup() {
   pinMode(INPUT5, INPUT);
   pinMode(INPUT6, INPUT);
   pinMode(INPUT7, INPUT);
-  pinMode(INPUT8, INPUT);
-  
+   
   Wire.begin(16,17);
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
@@ -137,7 +135,6 @@ void loop() {
   Serial.print(digitalRead(INPUT5));
   Serial.print(digitalRead(INPUT6));
   Serial.print(digitalRead(INPUT7));
-  Serial.print(digitalRead(INPUT8));
   Serial.println(""); 
   
   adc0 = ads1.readADC_SingleEnded(0);
