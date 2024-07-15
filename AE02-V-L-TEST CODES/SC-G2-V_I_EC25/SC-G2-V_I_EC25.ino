@@ -1,13 +1,13 @@
 /*
  * RTC Check
- * micro SD Card Check 
+ * micro SD Card 
  * RS485
- * SIM7500/EC25
+ * SIM800C
  * All Output Turn ON Series
  * All input status serial print
- * Turns ON All Outputs in series
- * Serial prints all the input status
- * External Antenna Test
+ *  Turns ON All Outputs in series
+ *  Serial prints all the input status
+ *  SIM800C External Antenna Test
  */
 
 #include <SPI.h>
@@ -18,13 +18,14 @@
 
 #define ANALOG_PIN_0 36
 
-#define INPUT1 35
+#define INPUT1 27
 #define INPUT2 34
-#define INPUT3 14
-#define INPUT4 13
-#define INPUT5 4
+#define INPUT3 35
+#define INPUT4 14
+#define INPUT5 13
 #define INPUT6 5
 #define INPUT7 15
+#define INPUT8 19
 
 #define OUTPUT1 12
 #define OUTPUT2 2
@@ -44,25 +45,28 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 Adafruit_ADS1115 ads1;
+
 int analog_value = 0;
   
 int readSwitch(){
   analog_value = analogRead(ANALOG_PIN_0);
-  return analog_value ; //Read analog
+  return analog_value; //Read analog
 }
 unsigned long int timer1 = 0;
+
 // ================================================ SETUP ================================================
 void setup() {
   Serial.begin(115200);
   Serial.println("Hello");
+
+  pinMode(RS485_FC, OUTPUT);
+  digitalWrite(RS485_FC, HIGH);   // RS-485 
+  
   Serial1.begin(9600, SERIAL_8N1, RS485_RX, RS485_TX); 
   Serial2.begin(115200, SERIAL_8N1, GSM_RX, GSM_TX); 
 
   pinMode(GSM_RESET, OUTPUT);
-  digitalWrite(GSM_RESET, HIGH);    
-
-  pinMode(RS485_FC, OUTPUT);
-  digitalWrite(RS485_FC, HIGH);   // RS-485 
+  digitalWrite(GSM_RESET, HIGH);   // RS-485 
   
   pinMode(OUTPUT1, OUTPUT);
   pinMode(OUTPUT2, OUTPUT);
@@ -74,7 +78,8 @@ void setup() {
   pinMode(INPUT5, INPUT);
   pinMode(INPUT6, INPUT);
   pinMode(INPUT7, INPUT);
-   
+  pinMode(INPUT8, INPUT);
+  
   Wire.begin(16,17);
 
   if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
@@ -82,10 +87,12 @@ void setup() {
     for(;;); // Don't proceed, loop forever
   }
   display.display();
+
   if (!ads1.begin(0x48)) {
     Serial.println("Failed to initialize ADS 1 .");
     while (1);
   }
+
   Serial.println("Testing Modem");
   timer1 = millis();
   Serial2.println("AT");
@@ -95,6 +102,7 @@ void setup() {
     Serial.write(inByte);
     }
   }
+
   timer1 = millis();
   Serial2.println("AT+CPIN?");
   while(millis()<timer1+10000){
@@ -103,7 +111,8 @@ void setup() {
     Serial.write(inByte);
     }
   }
-  timer1 = millis();
+  
+ timer1 = millis();
   Serial2.println("AT+CFUN?");
   while(millis()<timer1+10000){
     while (Serial2.available()) {
@@ -111,9 +120,10 @@ void setup() {
     Serial.write(inByte);
     }
   }
+
   Serial.println("Testing Modem Done"); 
   adcAttachPin(36);
-  digitalWrite(RS485_FC, HIGH);   // RS-485 
+  digitalWrite(RS485_FC, HIGH);   // RS-485   
 }
 
 void loop() {
@@ -124,6 +134,7 @@ void loop() {
     int inByte = Serial.read();
     Serial2.write(inByte);
   }
+
   while (Serial2.available()) {
     int inByte = Serial2.read();
     Serial.write(inByte);
@@ -135,6 +146,7 @@ void loop() {
   Serial.print(digitalRead(INPUT5));
   Serial.print(digitalRead(INPUT6));
   Serial.print(digitalRead(INPUT7));
+  Serial.print(digitalRead(INPUT8));
   Serial.println(""); 
   
   adc0 = ads1.readADC_SingleEnded(0);
@@ -159,8 +171,17 @@ void loop() {
   digitalWrite(OUTPUT1, LOW);
   digitalWrite(OUTPUT2, HIGH);
   delay(500);
-  digitalWrite(OUTPUT1, LOW);
-  digitalWrite(OUTPUT2, LOW);
-  Serial1.println("Hello RS-485");
+  digitalWrite(RS485_FC, HIGH);                    // Make FLOW CONTROL pin HIGH
+  delay(500);
+  Serial1.println(F("RS485 01 SUCCESS"));    // Send RS485 SUCCESS serially
+  delay(500);                                // Wait for transmission of data
+  digitalWrite(RS485_FC, LOW) ;                    // Receiving mode ON
+  delay(1000);     
+  
+  while (Serial1.available()) {  // Check if data is available
+    char c = Serial1.read();     // Read data from RS485
+    Serial.write(c);             // Print data on serial monitor
+  }
+  //Serial2.println("AT");
   delay(1000);
 }
