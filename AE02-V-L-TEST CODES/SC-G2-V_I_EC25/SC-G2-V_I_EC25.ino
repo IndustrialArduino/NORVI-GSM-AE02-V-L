@@ -1,15 +1,3 @@
-/*
- * RTC Check
- * micro SD Card 
- * RS485
- * SIM800C
- * All Output Turn ON Series
- * All input status serial print
- *  Turns ON All Outputs in series
- *  Serial prints all the input status
- *  SIM800C External Antenna Test
- */
-
 #include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
